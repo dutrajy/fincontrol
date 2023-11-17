@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Controle Financeiro Pessoal - Lançamentos</h1>
+
+    <div class="container mt-5">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Data de Criação</th>
+            <th>Data de Atualização</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="entries-list"></tbody>
+      </table>
+      <a href="/entries/form.html?action=create"><button class="btn btn-success">Novo</button></a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const reaisFormatter = Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"});
+        const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+            timeZone: 'America/Sao_Paulo',
+            time12: false,
+        });
+
+        const listEntries = async () => {
+            const entriesList = document.getElementById("entries-list");
+            entriesList.innerHTML = ``;
+
+            const response = await fetch("/api/entries");
+
+            if (response.status != 200) {
+                const p = document.createElement("p");
+                p.textContent = "Erro ao carregar lançamentos."
+                entriesList.append(p);
+                return;
+            }
+
+            const entries = await response.json();
+
+            if (entries.length === 0) {
+                const p = document.createElement("p");
+                p.textContent = "Nenhum lançamento cadastrado."
+                entriesList.append(p);
+                return;
+            }
+            
+            entries.forEach(function (entry) {
+                const entryRow = document.createElement("tr");
+                entryRow.innerHTML = `<tr>
+                    <td>${entry.id}</td>
+                    <td>${entry.description}</td>
+                    <td class="text-right">${reaisFormatter.format(entry.amount)}</td>
+                    <td>${dateTimeFormatter.format(new Date(entry.createdAt))}</td>
+                    <td>${entry.updatedAt ? dateTimeFormatter.format(new Date(entry.updatedAt)) : "-"}</td>
+                    <td>
+                        <a href="/entries/show.html?id=${entry.id}"><button class="btn btn-primary">Visualizar</button></a>
+                        <a href="/entries/form.html?action=update&id=${entry.id}"><button class="btn btn-warning">Editar</button></a>
+                        <button class="btn btn-danger" onclick="deleteEntry(${entry.id})">Excluir</button>
+                    </td>
+                </tr>`;
+                entriesList.append(entryRow);
+          });
+        }
+        
+        const deleteEntry = async (entryId) => {
+            const confirmDelete = confirm("Deseja realmente excluir este lançamento?");
+            
+            if (confirmDelete) {
+                const response = await fetch(`/api/entries/${entryId}`, { method: "DELETE" });
+                
+                if (response.status === 204) {
+                    alert("Lançamento removido com sucesso.");
+                } else {
+                    alert("Houve um erro ao remover o lançamento.")
+                }
+                
+                listEntries();
+            }
+        }
+        
+        document.addEventListener("DOMContentLoaded", listEntries);
+    </script>
+  </body>
+</html>
