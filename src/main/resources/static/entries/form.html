@@ -10,24 +10,38 @@
     />
   </head>
   <body>
-    <h1>Controle Financeiro Pessoal - Formulário de Lançamento</h1>
+    <header class="p-3 text-bg-dark">
+      <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+              <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                  <span class="fs-4 text-white">FinControl</span>
+                </a>
+              <ul class="nav nav-pills">
+                  <li><a href="/entries/list.html" class="nav-link px-2 text-white">Lançamentos</a></li>
+                  <li><a href="#" class="nav-link px-2 text-white">Sair</a></li>
+              </ul>
+          </div>
+      </div>
+  </header>
 
-    <div class="container mt-5">
-      <h2>Formulário de Lançamento</h2>
-      <form id="entry-form">
-        <div class="mb-3">
-          <label for="description" class="form-label">Descrição:</label>
-          <input type="text" class="form-control" id="description" required>
-        </div>
-        <div class="mb-3">
-          <label for="amount" class="form-label">Valor:</label>
-          <input type="number" class="form-control" id="amount" step="0.01" required>
-        </div>
-        <input type="hidden" id="entry-id" name="entry-id">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-        <a href="list.html" class="btn btn-secondary">Cancelar</a>
-      </form>
-    </div>
+    <main class="container py-4">
+        <h1 class="text-center mb-5" id="page-title"></h1>
+
+        <form id="entry-form">
+            <div class="mb-3">
+                <label for="description" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="description" name="description" required>
+            </div>
+            <div class="mb-3">
+                <label for="amount" class="form-label">Valor:</label>
+                <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+            </div>
+            <div class="d-flex justify-content-end mt-5" style="gap: 0.5rem">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="list.html" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -36,24 +50,28 @@
         const action = urlParams.get("action");
         const entryId = urlParams.get("id");
 
+        const pageTitle = document.getElementById("page-title");
+
         const entryForm = document.getElementById("entry-form");
-        const entryIdField = document.getElementById("entry-id");
         const descriptionField = document.getElementById("description");
         const amountField = document.getElementById("amount");
 
         if (action === "update" && entryId) {
+          pageTitle.textContent = "Editar Lançamento"
           try {
             // Realizar fetch para obter detalhes do lançamento para edição
             const response = await fetch(`/api/entries/${entryId}`);
             const entry = await response.json();
 
             // Preencher o formulário com os dados do lançamento
-            entryIdField.value = entry.id;
             descriptionField.value = entry.description;
             amountField.value = entry.amount;
           } catch (error) {
             console.error("Erro ao carregar dados do lançamento para edição:", error.message);
+            alert("Erro ao carregar lançamento!");
           }
+        } else {
+            pageTitle.textContent = "Novo Lançamento"
         }
 
         entryForm.addEventListener("submit", async (event) => {
@@ -79,7 +97,7 @@
               body: JSON.stringify(entryData),
             });
 
-            if (response.status === 201 || response.status === 204) {
+            if (response.status === 201 || response.status === 200) {
               // Redirecionar para a página de listagem após a conclusão bem-sucedida
               window.location.href = "list.html";
             } else {
@@ -87,6 +105,7 @@
             }
           } catch (error) {
             console.error("Erro ao salvar o lançamento:", error.message);
+            alert("Erro ao salvar lançamento!");
           }
         });
       });

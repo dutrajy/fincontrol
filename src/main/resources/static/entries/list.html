@@ -10,24 +10,40 @@
     />
   </head>
   <body>
-    <h1>Controle Financeiro Pessoal - Lançamentos</h1>
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                    <span class="fs-4 text-white">FinControl</span>
+                  </a>
+                <ul class="nav nav-pills">
+                    <li><a href="/entries/list.html" class="nav-link px-2 text-white">Lançamentos</a></li>
+                    <li><a href="#" class="nav-link px-2 text-white">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
 
-    <div class="container mt-5">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Descrição</th>
-            <th>Valor</th>
-            <th>Data de Criação</th>
-            <th>Data de Atualização</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="entries-list"></tbody>
-      </table>
-      <a href="/entries/form.html?action=create"><button class="btn btn-success">Novo</button></a>
-    </div>
+    <main class="container py-4">
+        <h1 class="text-center mb-5">Lançamentos</h1>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Data de Criação</th>
+              <th>Data de Atualização</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="entries-list"></tbody>
+        </table>
+
+        <div class="mt-5">
+            <a href="/entries/form.html?action=create"><button class="btn btn-success">Criar Novo Lançamento</button></a>
+        </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
